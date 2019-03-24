@@ -42,9 +42,20 @@ class AddOverlay extends React.Component {
 
       this.setState({ files });
     }
-
-    console.log(result);
   };
+
+  _addCamera = async () => {
+    Keyboard.dismiss();
+    await Permissions.askAsync(Permissions.CAMERA);
+    const result = await ImagePicker.launchCameraAsync();
+
+    if (!result.cancelled) {
+      const { files } = this.state;
+      files.push(result);
+
+      this.setState({ files });
+    }
+  }
 
   _saveDocument = async () => {
     const {
@@ -71,153 +82,146 @@ class AddOverlay extends React.Component {
         }}
       >
         <ScrollView
-          style={styles.container}
+          style={[styles.container]}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.titleText}>Add Note</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={subject => this.setState({ subject })}
-            value={this.state.subject}
-            autoFocus
-            enablesReturnKeyAutomatically
-            placeholder="Subject"
-          />
-          <TextInput
-            style={[styles.textInput, { height: 80 }]}
-            onChangeText={notes => this.setState({ notes })}
-            value={this.state.notes}
-            autoFocus
-            enablesReturnKeyAutomatically
-            placeholder="Notes..."
-            multiline
-          />
-          <Text style={styles.subtitleText}>Contact Information</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={name => this.setState({ name })}
-            value={this.state.name}
-            enablesReturnKeyAutomatically
-            placeholder="Name"
-          />
-          <TextInput
-            style={styles.textInput}
-            onChangeText={phone => this.setState({ phone })}
-            value={this.state.phone}
-            enablesReturnKeyAutomatically
-            placeholder="Phone"
-            keyboardType="phone-pad"
-          />
-          <TextInput
-            style={styles.textInput}
-            onChangeText={email => this.setState({ email })}
-            value={this.state.email}
-            enablesReturnKeyAutomatically
-            placeholder="Email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <Text style={styles.subtitleText}>Documents</Text>
-          <View style={{ flexDirection: 'row' }}>
-            <TouchableHighlight
-              style={styles.buttonStyle}
-              onPress={async () => {
-                await Permissions.askAsync(Permissions.CAMERA);
+          <View style={{ padding: 30 }}>
+            <Text style={styles.titleText}>Add Note</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={subject => this.setState({ subject })}
+              value={this.state.subject}
+              autoFocus
+              placeholder="Subject"
+            />
+            <TextInput
+              style={[styles.textInput, { height: 80 }]}
+              onChangeText={notes => this.setState({ notes })}
+              value={this.state.notes}
+              placeholder="Notes..."
+              multiline
+            />
+            <Text style={styles.subtitleText}>Contact Information</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={name => this.setState({ name })}
+              value={this.state.name}
 
-                const result = await ImagePicker.launchCameraAsync();
+              placeholder="Name"
+            />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={phone => this.setState({ phone })}
+              value={this.state.phone}
 
-                console.log(result);
-              }}
-              underlayColor={colors.white}
+              placeholder="Phone"
+              keyboardType="phone-pad"
+            />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={email => this.setState({ email })}
+              value={this.state.email}
+
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <Text style={styles.subtitleText}>Documents</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableHighlight
+                style={styles.buttonStyle}
+                onPress={this._addCamera}
+                underlayColor={colors.white}
+              >
+                <View>
+                  <Ionicons
+                    name="ios-camera"
+                    size={62}
+                    color={colors.primaryColor}
+                  />
+                  <Text style={{ color: colors.primaryColor }}>Camera</Text>
+                </View>
+              </TouchableHighlight>
+              <View style={{ width: 20 }} />
+              <TouchableHighlight
+                style={styles.buttonStyle}
+                onPress={this._addPhoto}
+                underlayColor={colors.white}
+              >
+                <View>
+                  <Ionicons
+                    name="ios-photos"
+                    size={62}
+                    color={colors.primaryColor}
+                  />
+                  <Text style={{ color: colors.primaryColor }}>Photos</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
+            <View
+              style={{ flexDirection: 'row', marginTop: 10, marginBottom: 10 }}
             >
-              <View>
-                <Ionicons
-                  name="ios-camera"
-                  size={62}
-                  color={colors.primaryColor}
-                />
-                <Text style={{ color: colors.primaryColor }}>Camera</Text>
-              </View>
-            </TouchableHighlight>
-            <View style={{ width: 20 }} />
-            <TouchableHighlight
-              style={styles.buttonStyle}
-              onPress={this._addPhoto}
-              underlayColor={colors.white}
-            >
-              <View>
-                <Ionicons
-                  name="ios-photos"
-                  size={62}
-                  color={colors.primaryColor}
-                />
-                <Text style={{ color: colors.primaryColor }}>Photos</Text>
-              </View>
-            </TouchableHighlight>
-          </View>
-          <View
-            style={{ flexDirection: 'row', marginTop: 10, marginBottom: 10 }}
-          >
-            {this.state.files.length > 0 ? (
-              this.state.files.map((image, i) => (
-                <Image
-                  source={{ uri: image.uri }}
-                  style={{
-                    width: 50,
-                    height: 50,
-                    margin: 3,
-                    borderRadius: 3,
-                  }}
-                  key={i}
-                />
-              ))
-            ) : (
-              <Text style={{ fontStyle: 'italic' }}>
+              {this.state.files.length > 0 ? (
+                this.state.files.map((image, i) => (
+                  <Image
+                    source={{ uri: image.uri }}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      margin: 3,
+                      borderRadius: 3,
+                    }}
+                    key={i}
+                  />
+                ))
+              ) : (
+                <Text style={{ fontStyle: 'italic' }}>
                 You haven&#39;t added any documents yet.
-              </Text>
-            )}
-          </View>
-          <View style={{ flex: 1, alignItems: 'center' }}>
-            <TouchableHighlight
-              style={[
-                styles.buttonStyle,
-                { padding: 12, width: '100%', marginBottom: 8 },
-              ]}
-              onPress={this._saveDocument}
-              underlayColor={colors.white}
-            >
-              <View>
-                <Text
-                  style={{
-                    color: colors.primaryColor,
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                  }}
-                >
+                </Text>
+              )}
+            </View>
+            <View style={{ flex: 1, alignItems: 'center' }}>
+              <TouchableHighlight
+                style={[
+                  styles.buttonStyle,
+                  { padding: 12, width: '100%', marginBottom: 8 },
+                ]}
+                onPress={this._saveDocument}
+                underlayColor={colors.white}
+              >
+                <View>
+                  <Text
+                    style={{
+                      color: colors.primaryColor,
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                    }}
+                  >
                   Save Note
-                </Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={[
-                styles.buttonStyle,
-                { padding: 12, width: '100%', borderColor: colors.red },
-              ]}
-              onPress={this.props.close}
-              underlayColor={colors.white}
-            >
-              <View>
-                <Text
-                  style={{
-                    color: colors.red,
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                  }}
-                >
+                  </Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={[
+                  styles.buttonStyle,
+                  { padding: 12, width: '100%', borderColor: colors.red },
+                ]}
+                onPress={this.props.close}
+                underlayColor={colors.white}
+              >
+                <View>
+                  <Text
+                    style={{
+                      color: colors.red,
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                    }}
+                  >
                   Cancel
-                </Text>
-              </View>
-            </TouchableHighlight>
+                  </Text>
+                </View>
+              </TouchableHighlight>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -229,7 +233,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    padding: 30,
   },
   textInput: {
     height: 40,

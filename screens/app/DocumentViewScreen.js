@@ -169,96 +169,98 @@ export default class DocumentViewScreen extends React.Component {
       <SafeAreaView style={styles.container}>
 
         <ScrollView>
-          <View style={styles.contactContainer}>
-            <Text style={styles.headerText}>Contact</Text>
-            <Text style={styles.contactText}>{contactInfo?.name}</Text>
-            <Text
-              style={[styles.contactText, { color: colors.blue }]}
-              onPress={() => this._email(contactInfo?.Email)}
-            >
-              {contactInfo?.email}
-            </Text>
-            <Text style={styles.contactText}>{contactInfo?.phone}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              padding: 6,
-            }}
-          >
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity
-              onPress={this._selectText}
-              style={[
-                styles.selectButtonContainer,
-                {
-                  alignItems: 'flex-end',
-                  borderTopLeftRadius: borderRadiusConst,
-                  borderBottomLeftRadius: borderRadiusConst,
-                },
-                this.state.originalFile
-                  ? { backgroundColor: colors.white }
-                  : { backgroundColor: colors.primaryColor },
-              ]}
-            >
+          <View style={{ paddingBottom: 30, paddingTop: 12 }}>
+            <View style={styles.contactContainer}>
+              <Text style={styles.headerText}>Contact</Text>
+              <Text style={styles.contactText}>{contactInfo?.name}</Text>
               <Text
+                style={[styles.contactText, { color: colors.blue }]}
+                onPress={() => this._email(contactInfo?.Email)}
+              >
+                {contactInfo?.email}
+              </Text>
+              <Text style={styles.contactText}>{contactInfo?.phone}</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                padding: 6,
+              }}
+            >
+              <View style={{ flex: 1 }} />
+              <TouchableOpacity
+                onPress={this._selectText}
                 style={[
-                  styles.selectButtonText,
+                  styles.selectButtonContainer,
+                  {
+                    alignItems: 'flex-end',
+                    borderTopLeftRadius: borderRadiusConst,
+                    borderBottomLeftRadius: borderRadiusConst,
+                  },
                   this.state.originalFile
-                    ? { color: colors.primaryColor }
-                    : { color: colors.white },
+                    ? { backgroundColor: colors.white }
+                    : { backgroundColor: colors.primaryColor },
                 ]}
               >
+                <Text
+                  style={[
+                    styles.selectButtonText,
+                    this.state.originalFile
+                      ? { color: colors.primaryColor }
+                      : { color: colors.white },
+                  ]}
+                >
                 Text
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={this._selectOriginal}
-              style={[
-                styles.selectButtonContainer,
-                {
-                  alignItems: 'flex-start',
-                  borderTopRightRadius: borderRadiusConst,
-                  borderBottomRightRadius: borderRadiusConst,
-                },
-                this.state.originalFile
-                  ? { backgroundColor: colors.primaryColor }
-                  : { backgroundColor: colors.white },
-              ]}
-            >
-              <Text
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this._selectOriginal}
                 style={[
-                  styles.selectButtonText,
+                  styles.selectButtonContainer,
+                  {
+                    alignItems: 'flex-start',
+                    borderTopRightRadius: borderRadiusConst,
+                    borderBottomRightRadius: borderRadiusConst,
+                  },
                   this.state.originalFile
-                    ? { color: colors.white }
-                    : { color: colors.primaryColor },
+                    ? { backgroundColor: colors.primaryColor }
+                    : { backgroundColor: colors.white },
                 ]}
               >
+                <Text
+                  style={[
+                    styles.selectButtonText,
+                    this.state.originalFile
+                      ? { color: colors.white }
+                      : { color: colors.primaryColor },
+                  ]}
+                >
                 Original
-              </Text>
-            </TouchableOpacity>
-            <View style={{ flex: 1 }} />
-          </View>
-          {this.state.originalFile ? fileView : textView}
+                </Text>
+              </TouchableOpacity>
+              <View style={{ flex: 1 }} />
+            </View>
+            {this.state.originalFile ? fileView : textView}
 
-          <View
-            style={{
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'center',
-            }}
-          >
-            <TouchableHighlight
-              onPress={this._deleteFile}
-              activeOpacity={0.25}
-              underlayColor="rgba(0,0,0,0)"
+            <View
+              style={{
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'center',
+              }}
             >
-              <View style={styles.deleteButtonContainer}>
-                <Ionicons name="ios-trash" size={32} color={colors.red} />
-                <Text style={styles.deleteButtonText}>Delete Note</Text>
-              </View>
-            </TouchableHighlight>
+              <TouchableHighlight
+                onPress={this._deleteFile}
+                activeOpacity={0.25}
+                underlayColor="rgba(0,0,0,0)"
+              >
+                <View style={styles.deleteButtonContainer}>
+                  <Ionicons name="ios-trash" size={32} color={colors.red} />
+                  <Text style={styles.deleteButtonText}>Delete Note</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>

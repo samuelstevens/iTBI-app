@@ -13,18 +13,12 @@ const signIn = (callback, username, password) => {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
       },
       body,
     }),
   )
-    .then(response => response.json())
-    .then(responseJson => {
-      callback(responseJson);
-      if (!responseJson.success) {
-        Alert.alert(`Error: ${responseJson.message}`);
-        console.log(responseJson.message);
-      }
+    .then(response => {
+      callback(response);
     })
     .catch(error => {
       Alert.alert(

@@ -5,7 +5,7 @@ const timeout = (ms, promise) => new Promise((resolve, reject) => {
   promise.then(resolve, reject);
 });
 
-const mediumTimeout = 3000;
+const mediumTimeout = 6000;
 
 export default timeout;
 export { mediumTimeout };

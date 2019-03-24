@@ -5,7 +5,7 @@ import {
   AsyncStorage,
   Modal,
   SafeAreaView,
-  Button,
+  Button, View, Text,
 } from 'react-native';
 
 import { getDocumentList } from '../../api/api';
@@ -17,6 +17,7 @@ import {
 import ActionButton from '../../components/ActionButton';
 import SearchOverlay from '../../components/SearchOverlay';
 import AddOverlay from '../../components/AddOverlay';
+import getMessage from '../../constants/Messages';
 
 export default class DocumentListScreen extends React.Component {
   static navigationOptions = {
@@ -30,6 +31,7 @@ export default class DocumentListScreen extends React.Component {
       searchOverlayVisible: false,
       addOverlayVisible: false,
       refreshing: false,
+      message: getMessage(),
     };
   }
 
@@ -97,6 +99,13 @@ export default class DocumentListScreen extends React.Component {
           data={this.state.documents}
           renderItem={this._renderItem}
           ItemSeparatorComponent={DocumentListSeparator}
+          ListFooterComponent={(
+            <Text style={{
+              margin: 18, fontSize: 18, fontStyle: 'italic', marginBottom: 12, textAlign: 'center',
+            }}
+            >{this.state.message}
+            </Text>
+)}
         />
         <Button
           onPress={async () => {
@@ -104,8 +113,10 @@ export default class DocumentListScreen extends React.Component {
             await AsyncStorage.setItem('username', '');
             this.props.navigation.navigate('Auth');
           }}
+
           title="Log out"
         />
+        <View style={{ height: 12 }} />
         <ActionButton
           onPress={() => this.setState({ addOverlayVisible: true })}
           iconName="ios-add"
@@ -119,6 +130,7 @@ export default class DocumentListScreen extends React.Component {
         <Modal
           animationType="slide"
           transparent
+          onRequestClose={() => {}}
           visible={this.state.searchOverlayVisible}
         >
           <SearchOverlay
@@ -129,6 +141,7 @@ export default class DocumentListScreen extends React.Component {
         <Modal
           animationType="slide"
           transparent
+          onRequestClose={() => {}}
           visible={this.state.addOverlayVisible}
         >
           <AddOverlay close={this._closeModal} />

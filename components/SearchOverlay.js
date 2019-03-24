@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  SafeAreaView, StyleSheet, TextInput, FlatList,
+  SafeAreaView, StyleSheet, TextInput, FlatList, AsyncStorage,
 } from 'react-native';
 import colors from '../constants/Colors';
 import { getResults } from '../api/api';
@@ -10,11 +10,17 @@ import { DocumentListItem, DocumentListSeparator } from './DocumentListItem';
 class SearchOverlay extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { search: '', results: [] };
+    this.state = { search: '', results: [], username: '' };
   }
 
-  _handleOnChange = search => {
+  async componentDidMount() {
+    const username = await AsyncStorage.getItem('username');
+    this.setState({ username });
+  }
+
+  _handleOnChange = async (search) => {
     this.setState({ search });
+
     getResults(
       ({ files }) => {
         const results = Object.keys(files).map(fileName => ({
@@ -26,7 +32,7 @@ class SearchOverlay extends React.Component {
         this.setState({ results });
       },
       search,
-      'pt1',
+      this.state.username,
     );
   };
 
