@@ -15,15 +15,25 @@ class SearchOverlay extends React.Component {
 
   _handleOnChange = search => {
     this.setState({ search });
-    getResults(({ results }) => {
-      this.setState({ results: results.map(result => ({ key: result })) });
-    }, search);
+    getResults(
+      ({ files }) => {
+        const results = Object.keys(files).map(fileName => ({
+          ...files[fileName],
+          fileName,
+          key: fileName,
+        }));
+
+        this.setState({ results });
+      },
+      search,
+      'pt1',
+    );
   };
 
   _renderItem = ({ item }) => (
     <DocumentListItem
       item={item}
-      onPress={() => this.props.navigateTo(item.key)}
+      onPress={() => this.props.navigateTo(item)}
     />
   );
 

@@ -13,7 +13,7 @@ const DocumentListItem = ({ item, onPress = () => {} }) => (
   >
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>{item.key}</Text>
+        <Text style={styles.text}>{item.fileName}</Text>
       </View>
       <Ionicons name="ios-arrow-forward" size={32} color={colors.primaryColor} />
     </View>

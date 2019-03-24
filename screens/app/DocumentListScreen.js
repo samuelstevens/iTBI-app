@@ -4,8 +4,8 @@ import {
   StyleSheet,
   AsyncStorage,
   Modal,
-  Alert,
   SafeAreaView,
+  Button,
 } from 'react-native';
 
 import { getDocumentList } from '../../api/api';
@@ -29,43 +29,82 @@ export default class DocumentListScreen extends React.Component {
       documents: [],
       searchOverlayVisible: false,
       addOverlayVisible: false,
+      refreshing: false,
     };
   }
 
   async componentDidMount() {
     const username = await AsyncStorage.getItem('username');
 
-    getDocumentList(response => {
-      const documents = response.files.map(doc => ({ key: doc }));
-      this.setState({ documents });
-    }, username);
+    this.setState({ username });
+
+    this._getDocuments(username);
   }
+
+  _getDocuments = (username = this.state.username, callback = () => {}) => {
+    getDocumentList(response => {
+      const documents = Object.keys(response.files).map(fileName => ({
+        ...response.files[fileName],
+        fileName,
+        key: fileName,
+      }));
+
+      this.setState({ documents });
+      callback();
+    }, username);
+  };
 
   _renderItem = ({ item }) => (
     <DocumentListItem
       item={item}
-      onPress={() => this.props.navigation.push('DocumentView', { documentName: item.key })
+      onPress={() => this.props.navigation.push('DocumentView', {
+        file: item,
+        username: this.state.username,
+        refresh: this._getDocuments,
+      })
       }
     />
   );
 
-  _navigateTo = docName => {
+  _navigateTo = file => {
     this._closeModal();
-    console.log('navigating to', docName);
-    this.props.navigation.push('DocumentView', { documentName: docName });
+    console.log('navigating to', file.fileName);
+    this.props.navigation.push('DocumentView', {
+      file,
+      username: this.state.username,
+      refresh: this._getDocuments,
+    });
   };
 
   _closeModal = () => {
+    this._getDocuments();
     this.setState({ searchOverlayVisible: false, addOverlayVisible: false });
   };
+
+  _onRefresh = () => {
+    this.setState({ refreshing: true });
+    this._getDocuments(this.state.username, () => {
+      this.setState({ refreshing: false });
+    });
+  }
 
   render() {
     return (
       <SafeAreaView style={styles.container}>
         <FlatList
+          refreshing={this.state.refreshing}
+          onRefresh={this._onRefresh}
           data={this.state.documents}
           renderItem={this._renderItem}
           ItemSeparatorComponent={DocumentListSeparator}
+        />
+        <Button
+          onPress={async () => {
+            await AsyncStorage.setItem('signedIn', 'false');
+            await AsyncStorage.setItem('username', '');
+            this.props.navigation.navigate('Auth');
+          }}
+          title="Log out"
         />
         <ActionButton
           onPress={() => this.setState({ addOverlayVisible: true })}
@@ -81,7 +120,6 @@ export default class DocumentListScreen extends React.Component {
           animationType="slide"
           transparent
           visible={this.state.searchOverlayVisible}
-
         >
           <SearchOverlay
             cancelSearch={this._closeModal}
@@ -92,7 +130,6 @@ export default class DocumentListScreen extends React.Component {
           animationType="slide"
           transparent
           visible={this.state.addOverlayVisible}
-
         >
           <AddOverlay close={this._closeModal} />
         </Modal>

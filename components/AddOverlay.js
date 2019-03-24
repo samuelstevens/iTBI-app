@@ -8,17 +8,23 @@ import {
   TouchableHighlight,
   Image,
   Keyboard,
-  ScrollView,
+  ScrollView, AsyncStorage,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ImagePicker, Permissions } from 'expo';
 import colors from '../constants/Colors';
-import { uploadPhoto } from '../api/api';
+import { uploadDocument } from '../api/files';
 
 class AddOverlay extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', phone: '', files: [] };
+    this.state = {
+      name: '',
+      phone: '',
+      subject: '',
+      email: '',
+      files: [],
+    };
   }
 
   _addPhoto = async () => {
@@ -31,30 +37,29 @@ class AddOverlay extends React.Component {
     });
 
     if (!result.cancelled) {
-      uploadPhoto(
-        () => {
-          const { files } = this.state;
-          files.push(result);
+      const { files } = this.state;
+      files.push(result);
 
-          this.setState({ files });
-        },
-        result,
-        'pt1',
-      );
+      this.setState({ files });
     }
 
     console.log(result);
   };
 
-  _saveDocument = () => {
+  _saveDocument = async () => {
     const {
-      name, phone, email, files,
+      name, phone, email, subject, files, notes,
     } = this.state;
-    const details = { name, phone, email };
+    const details = {
+      name, phone, email, subject, notes,
+    };
 
-    uploadPhoto(response => {
-      this.props.close();
-    }, files, details);
+    uploadDocument(
+      this.props.close,
+      files,
+      details,
+      await AsyncStorage.getItem('username'),
+    );
   };
 
   render() {
@@ -70,12 +75,28 @@ class AddOverlay extends React.Component {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.titleText}>Add Note</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={subject => this.setState({ subject })}
+            value={this.state.subject}
+            autoFocus
+            enablesReturnKeyAutomatically
+            placeholder="Subject"
+          />
+          <TextInput
+            style={[styles.textInput, { height: 80 }]}
+            onChangeText={notes => this.setState({ notes })}
+            value={this.state.notes}
+            autoFocus
+            enablesReturnKeyAutomatically
+            placeholder="Notes..."
+            multiline
+          />
           <Text style={styles.subtitleText}>Contact Information</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={name => this.setState({ name })}
             value={this.state.name}
-            autoFocus
             enablesReturnKeyAutomatically
             placeholder="Name"
           />
@@ -91,7 +112,6 @@ class AddOverlay extends React.Component {
             style={styles.textInput}
             onChangeText={email => this.setState({ email })}
             value={this.state.email}
-            autoFocus
             enablesReturnKeyAutomatically
             placeholder="Email"
             keyboardType="email-address"
@@ -159,7 +179,10 @@ class AddOverlay extends React.Component {
           </View>
           <View style={{ flex: 1, alignItems: 'center' }}>
             <TouchableHighlight
-              style={[styles.buttonStyle, { padding: 12, width: '100%', marginBottom: 8 }]}
+              style={[
+                styles.buttonStyle,
+                { padding: 12, width: '100%', marginBottom: 8 },
+              ]}
               onPress={this._saveDocument}
               underlayColor={colors.white}
             >
@@ -214,9 +237,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: colors.white,
     borderRadius: 5,
-    padding: 8,
+    padding: 10,
     paddingLeft: 12,
-    fontSize: 22,
+    fontSize: 18,
     marginBottom: 8,
   },
 
